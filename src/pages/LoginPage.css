@@ -1,0 +1,118 @@
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.left-sky {
+  flex: 1;
+  background: linear-gradient(to bottom, #cce7ff, #e6f3ff);
+  position: relative;
+  overflow: hidden;
+}
+
+.right-form {
+  flex: 1;
+  padding: 4rem;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.right-form h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.checkbox-area {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+  margin: 1rem 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.sign-up {
+  background-color: #4da6ff;
+  color: white;
+}
+
+.sign-in {
+  background-color: white;
+  color: #4da6ff;
+  border: 1px solid #4da6ff;
+}
+
+.balloon {
+  position: absolute;
+  width: 120px;
+  left: 20%;
+  top: 25%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.cloud {
+  position: absolute;
+  width: 100px;
+  opacity: 0.8;
+  animation: cloud-float 10s ease-in-out infinite;
+}
+
+.cloud1 {
+  top: 50%;
+  left: 10%;
+}
+
+.cloud2 {
+  top: 70%;
+  left: 30%;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes cloud-float {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
