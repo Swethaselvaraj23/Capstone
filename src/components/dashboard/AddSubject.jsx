@@ -1,224 +1,355 @@
-// components/dashboard/AddSubject.jsx
-
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
   TextField,
   Button,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
   IconButton,
+  Menu,
+  MenuItem,
+  Checkbox,
   List,
   ListItem,
   ListItemText,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Collapse,
+  Divider,
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
-const colorOptions = ['#04454B', '#028288', '#71CDD4', '#D8EAEF', '#E5E3DF'];
+const colorPalette = [
+  { name: 'Teal', value: '#028288' },
+  { name: 'Navy', value: '#04454B' },
+  { name: 'Coral', value: '#ff7043' },
+  { name: 'Seafoam', value: '#D8EAEF' },
+  { name: 'Light Blue', value: '#E6F1F3' },
+];
 
-export default function AddSubject() {
-  const [subjects, setSubjects] = useState([]);
+export default function AddSubject({ subjects, setSubjects }) {
   const [newSubject, setNewSubject] = useState('');
-  const [topics, setTopics] = useState({});
-  const [subtopics, setSubtopics] = useState({});
-  const [selectedSubject, setSelectedSubject] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [colorDialogOpen, setColorDialogOpen] = useState(false);
-  const [topicDialogOpen, setTopicDialogOpen] = useState(false);
-  const [subtopicDialogOpen, setSubtopicDialogOpen] = useState(false);
-  const [newTopic, setNewTopic] = useState('');
-  const [newSubtopic, setNewSubtopic] = useState('');
+  const [selectedColor, setSelectedColor] = useState(colorPalette[0].value);
+  const [colorMenuAnchor, setColorMenuAnchor] = useState(null);
+  const [expandedSubjectIndex, setExpandedSubjectIndex] = useState(null);
 
-  const handleAddSubject = () => {
-    if (newSubject.trim()) {
-      setSubjects([...subjects, { name: newSubject, color: '#D8EAEF' }]);
+  const handleAdd = () => {
+    if (newSubject.trim() !== '') {
+      setSubjects([
+        ...subjects,
+        {
+          name: newSubject.trim(),
+          color: selectedColor,
+          chapters: [], // NEW
+        },
+      ]);
       setNewSubject('');
+      setSelectedColor(colorPalette[0].value);
     }
   };
 
-  const handleDeleteSubject = (index) => {
-    const updated = [...subjects];
-    updated.splice(index, 1);
+  const handleDelete = (index) => {
+    const updated = subjects.filter((_, i) => i !== index);
     setSubjects(updated);
-    const subjName = subjects[index].name;
-    const updatedTopics = { ...topics };
-    const updatedSubtopics = { ...subtopics };
-    delete updatedTopics[subjName];
-    delete updatedSubtopics[subjName];
-    setTopics(updatedTopics);
-    setSubtopics(updatedSubtopics);
-  };
-
-  const handleOpenTopicDialog = (index) => {
-    setSelectedSubject(index);
-    setTopicDialogOpen(true);
-  };
-
-  const handleOpenSubtopicDialog = (index) => {
-    setSelectedSubject(index);
-    setSubtopicDialogOpen(true);
-  };
-
-  const handleAddTopic = () => {
-    const subject = subjects[selectedSubject].name;
-    if (newTopic.trim()) {
-      const updatedTopics = { ...topics };
-      updatedTopics[subject] = [...(updatedTopics[subject] || []), newTopic.trim()];
-      setTopics(updatedTopics);
-      setNewTopic('');
-      setTopicDialogOpen(false);
+    if (expandedSubjectIndex === index) {
+      setExpandedSubjectIndex(null);
     }
   };
 
-  const handleAddSubtopic = () => {
-    const subject = subjects[selectedSubject].name;
-    if (newSubtopic.trim()) {
-      const updatedSubtopics = { ...subtopics };
-      updatedSubtopics[subject] = [...(updatedSubtopics[subject] || []), newSubtopic.trim()];
-      setSubtopics(updatedSubtopics);
-      setNewSubtopic('');
-      setSubtopicDialogOpen(false);
-    }
+  const handleCardClick = (index) => {
+    setExpandedSubjectIndex(expandedSubjectIndex === index ? null : index);
   };
 
-  const handleOpenMenu = (event, index) => {
-    setSelectedSubject(index);
-    setAnchorEl(event.currentTarget);
+  const handleAddChapter = (index, chapterName) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[index].chapters.push({
+      name: chapterName,
+      completed: false,
+      topics: [],
+    });
+    setSubjects(updatedSubjects);
   };
 
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
+  const handleAddTopic = (subjectIndex, chapterIndex, topicName) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].chapters[chapterIndex].topics.push({
+      name: topicName,
+      completed: false,
+      subtopics: [],
+    });
+    setSubjects(updatedSubjects);
   };
 
-  const handleEditColor = () => {
-    setColorDialogOpen(true);
-    handleCloseMenu();
+  const handleAddSubtopic = (subjectIndex, chapterIndex, topicIndex, subtopicName) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].chapters[chapterIndex].topics[topicIndex].subtopics.push({
+      name: subtopicName,
+      completed: false,
+    });
+    setSubjects(updatedSubjects);
   };
 
-  const handleColorPick = (color) => {
-    const updated = [...subjects];
-    updated[selectedSubject].color = color;
-    setSubjects(updated);
-    setColorDialogOpen(false);
+  const toggleCompleted = (item) => {
+    item.completed = !item.completed;
+    setSubjects([...subjects]);
   };
 
   return (
-    <Box>
-      <Typography variant="h6" fontWeight={600} mb={2}>Add Subject with Topics and Subtopics</Typography>
-
-      <Box display="flex" gap={2} mb={2}>
+    <Box sx={{ width: '100%' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          mb: 4,
+          alignItems: 'center',
+        }}
+      >
         <TextField
-          label="Subject Name"
+          label="New Subject"
           variant="outlined"
           value={newSubject}
           onChange={(e) => setNewSubject(e.target.value)}
+          size="small"
         />
-        <Button variant="contained" onClick={handleAddSubject}>
+
+        {/* Color Picker */}
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: selectedColor,
+            color: '#fff',
+            minWidth: 100,
+            '&:hover': {
+              opacity: 0.8,
+              backgroundColor: selectedColor,
+            },
+          }}
+          onClick={(e) => setColorMenuAnchor(e.currentTarget)}
+        >
+          Color
+        </Button>
+        <Menu
+          anchorEl={colorMenuAnchor}
+          open={Boolean(colorMenuAnchor)}
+          onClose={() => setColorMenuAnchor(null)}
+        >
+          {colorPalette.map((color) => (
+            <MenuItem
+              key={color.value}
+              onClick={() => {
+                setSelectedColor(color.value);
+                setColorMenuAnchor(null);
+              }}
+            >
+              <Box
+                sx={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: '50%',
+                  backgroundColor: color.value,
+                  mr: 1,
+                }}
+              />
+              {color.name}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        <Button
+          variant="contained"
+          onClick={handleAdd}
+          sx={{
+            bgcolor: '#028288',
+            '&:hover': { bgcolor: '#04454B' },
+          }}
+          startIcon={<AddIcon />}
+        >
           Add
         </Button>
       </Box>
 
-      <List>
-        {subjects.map((subj, index) => (
-          <ListItem
-            key={index}
-            sx={{ bgcolor: subj.color, borderRadius: 2, mb: 1 }}
-            secondaryAction={
-              <IconButton onClick={(e) => handleOpenMenu(e, index)}>
-                <MoreVertIcon />
-              </IconButton>
-            }
-          >
-            <ListItemText
-              primary={subj.name}
-              secondary={
-                <>
-                  {(topics[subj.name] || []).map((t, i) => (
-                    <div key={i}>• {t}</div>
-                  ))}
-                  {(subtopics[subj.name] || []).map((s, i) => (
-                    <div key={i}>↳ {s}</div>
-                  ))}
-                </>
-              }
-            />
-            <Button onClick={() => handleOpenTopicDialog(index)} sx={{ ml: 1 }}>+ Topic</Button>
-            <Button onClick={() => handleOpenSubtopicDialog(index)} sx={{ ml: 1 }}>+ Subtopic</Button>
-          </ListItem>
-        ))}
-      </List>
-
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-        <MenuItem onClick={handleEditColor}>Edit Color</MenuItem>
-        <MenuItem onClick={() => handleDeleteSubject(selectedSubject)}>Delete</MenuItem>
-      </Menu>
-
-      <Dialog open={colorDialogOpen} onClose={() => setColorDialogOpen(false)}>
-        <DialogTitle>Select Card Color</DialogTitle>
-        <DialogContent>
-          <Box display="flex" gap={2} mt={2}>
-            {colorOptions.map((color) => (
-              <Box
-                key={color}
-                onClick={() => handleColorPick(color)}
+      <Grid container spacing={3}>
+        {subjects.map((subject, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Card
+              sx={{
+                bgcolor: subject.color,
+                color: '#fff',
+                minHeight: 140,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                cursor: 'pointer',
+              }}
+              onClick={() => handleCardClick(index)}
+            >
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  {subject.name}
+                </Typography>
+              </CardContent>
+              <IconButton
+                size="small"
                 sx={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  bgcolor: color,
-                  cursor: 'pointer',
-                  border: '2px solid #fff',
-                  boxShadow: '0 0 6px rgba(0,0,0,0.2)',
+                  color: '#fff',
+                  bgcolor: 'rgba(0,0,0,0.2)',
+                  '&:hover': { bgcolor: 'rgba(0,0,0,0.4)' },
                 }}
-              />
-            ))}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setColorDialogOpen(false)}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(index);
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Card>
 
-      <Dialog open={topicDialogOpen} onClose={() => setTopicDialogOpen(false)}>
-        <DialogTitle>Add Topic</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            fullWidth
-            label="Topic Name"
-            variant="outlined"
-            value={newTopic}
-            onChange={(e) => setNewTopic(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setTopicDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleAddTopic}>Add</Button>
-        </DialogActions>
-      </Dialog>
+            <Collapse in={expandedSubjectIndex === index} unmountOnExit>
+              <Box sx={{ mt: 2, p: 2, background: '#f2f2f2', borderRadius: 2 }}>
+                <Typography variant="subtitle1" sx={{ mb: 1, color: '#04454B', fontWeight: 'bold' }}>
+                  Chapters:
+                </Typography>
+                <AddChapter subjectIndex={index} onAdd={handleAddChapter} />
+                <List dense>
+                  {subject.chapters.map((chapter, chapIdx) => (
+                    <Box key={chapIdx} sx={{ mb: 2 }}>
+                      <ListItem disableGutters>
+                        <Checkbox
+                          checked={chapter.completed}
+                          onChange={() => toggleCompleted(chapter)}
+                        />
+                        <ListItemText primary={chapter.name} />
+                      </ListItem>
+                      <AddTopic
+                        subjectIndex={index}
+                        chapterIndex={chapIdx}
+                        onAdd={handleAddTopic}
+                      />
+                      <List dense sx={{ pl: 4 }}>
+                        {chapter.topics.map((topic, topicIdx) => (
+                          <Box key={topicIdx}>
+                            <ListItem disableGutters>
+                              <Checkbox
+                                checked={topic.completed}
+                                onChange={() => toggleCompleted(topic)}
+                              />
+                              <ListItemText primary={topic.name} />
+                            </ListItem>
+                            <AddSubtopic
+                              subjectIndex={index}
+                              chapterIndex={chapIdx}
+                              topicIndex={topicIdx}
+                              onAdd={handleAddSubtopic}
+                            />
+                            <List dense sx={{ pl: 4 }}>
+                              {topic.subtopics.map((sub, subIdx) => (
+                                <ListItem key={subIdx} disableGutters>
+                                  <Checkbox
+                                    checked={sub.completed}
+                                    onChange={() => toggleCompleted(sub)}
+                                  />
+                                  <ListItemText primary={sub.name} />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Box>
+                        ))}
+                      </List>
+                    </Box>
+                  ))}
+                </List>
+              </Box>
+            </Collapse>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+}
 
-      <Dialog open={subtopicDialogOpen} onClose={() => setSubtopicDialogOpen(false)}>
-        <DialogTitle>Add Subtopic</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            fullWidth
-            label="Subtopic (e.g. Test Marks, Notes)"
-            variant="outlined"
-            value={newSubtopic}
-            onChange={(e) => setNewSubtopic(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSubtopicDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleAddSubtopic}>Add</Button>
-        </DialogActions>
-      </Dialog>
+function AddChapter({ subjectIndex, onAdd }) {
+  const [chapterName, setChapterName] = useState('');
+  return (
+    <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+      <TextField
+        value={chapterName}
+        size="small"
+        placeholder="New Chapter"
+        onChange={(e) => setChapterName(e.target.value)}
+      />
+      <Button
+        variant="contained"
+        size="small"
+        sx={{ bgcolor: '#028288' }}
+        onClick={() => {
+          if (chapterName.trim()) {
+            onAdd(subjectIndex, chapterName.trim());
+            setChapterName('');
+          }
+        }}
+      >
+        Add
+      </Button>
+    </Box>
+  );
+}
+
+function AddTopic({ subjectIndex, chapterIndex, onAdd }) {
+  const [topicName, setTopicName] = useState('');
+  return (
+    <Box sx={{ display: 'flex', gap: 1, my: 1 }}>
+      <TextField
+        value={topicName}
+        size="small"
+        placeholder="New Topic"
+        onChange={(e) => setTopicName(e.target.value)}
+      />
+      <Button
+        variant="contained"
+        size="small"
+        sx={{ bgcolor: '#028288' }}
+        onClick={() => {
+          if (topicName.trim()) {
+            onAdd(subjectIndex, chapterIndex, topicName.trim());
+            setTopicName('');
+          }
+        }}
+      >
+        Add
+      </Button>
+    </Box>
+  );
+}
+
+function AddSubtopic({ subjectIndex, chapterIndex, topicIndex, onAdd }) {
+  const [subtopicName, setSubtopicName] = useState('');
+  return (
+    <Box sx={{ display: 'flex', gap: 1, my: 1 }}>
+      <TextField
+        value={subtopicName}
+        size="small"
+        placeholder="New Subtopic"
+        onChange={(e) => setSubtopicName(e.target.value)}
+      />
+      <Button
+        variant="contained"
+        size="small"
+        sx={{ bgcolor: '#028288' }}
+        onClick={() => {
+          if (subtopicName.trim()) {
+            onAdd(subjectIndex, chapterIndex, topicIndex, subtopicName.trim());
+            setSubtopicName('');
+          }
+        }}
+      >
+        Add
+      </Button>
     </Box>
   );
 }

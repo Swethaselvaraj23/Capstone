@@ -4,48 +4,52 @@ import {
   Drawer,
   Typography,
   IconButton,
-  Grid,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Button,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import TaskIcon from '@mui/icons-material/Checklist';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AddSubject from '../components/dashboard/AddSubject';
-import TaskProgress from '../components/dashboard/TaskProgress';
 import ProgressCharts from '../components/dashboard/ProgressCharts';
 import Settings from '../components/dashboard/Settings';
-
+import AddSubject from '../components/dashboard/AddSubject';
 
 const drawerWidth = 220;
 
 export default function StudentDashboard() {
   const [selectedSection, setSelectedSection] = useState('Tasks');
-
-  const renderSection = () => {
-    switch (selectedSection) {
-      case 'Tasks':
-        return (
-          <>
-            <AddSubject />
-            <TaskProgress />
-          </>
-        );
-      case 'Progress':
-        return <ProgressCharts />;
-      
-      case 'Settings':
-        return <Settings />;
-      default:
-        return <Typography>Section coming soon...</Typography>;
-    }
-  };
-
+  const [subjects, setSubjects] = useState([]);
+ const renderSection = () => {
+  switch (selectedSection) {
+    case 'Tasks':
+      return (
+        <>
+          <AddSubject subjects={subjects} setSubjects={setSubjects} />
+          <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
+            Add your tasks here
+          </Typography>
+        </>
+      );
+    case 'Progress':
+      return <ProgressCharts />;
+    case 'Settings':
+      return <Settings />;
+    default:
+      return (
+        <Box textAlign="center" mt={10}>
+          <Typography variant="h6" color="text.secondary">
+            Section coming soon...
+          </Typography>
+        </Box>
+      );
+  }
+};
   return (
     <Box sx={{ display: 'flex', height: '100vh', bgcolor: '#f7f9fa' }}>
       {/* Sidebar */}
@@ -54,7 +58,7 @@ export default function StudentDashboard() {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
+          '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
             bgcolor: '#028288',
@@ -67,11 +71,11 @@ export default function StudentDashboard() {
           Tracklyn
         </Typography>
         <List>
-          {[ 
-            { label: 'Tasks', icon: <TaskIcon /> }, 
+          {[
+            { label: 'Tasks', icon: <TaskIcon /> },
             { label: 'Progress', icon: <BarChartIcon /> },
             { label: 'Calendar', icon: <CalendarTodayIcon /> },
-            { label: 'Settings', icon: <SettingsIcon /> }
+            { label: 'Settings', icon: <SettingsIcon /> },
           ].map(({ label, icon }) => (
             <ListItem key={label} disablePadding>
               <ListItemButton
@@ -93,18 +97,45 @@ export default function StudentDashboard() {
         </List>
       </Drawer>
 
-      {/* Main content */}
+      {/* Main Content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Header */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+          }}
+        >
           <Typography variant="h4" fontWeight={600} color="#04454B">
             {selectedSection}
           </Typography>
-          <IconButton>
-            <MenuIcon />
-          </IconButton>
+
+          {/* AI Jellyfish Chat Button */}
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: '#6A1B9A',
+              color: 'white',
+              borderRadius: '999px',
+              px: 3,
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: '#4A148C',
+              },
+            }}
+            onClick={() => {
+              console.log('Chat with Jellyfish launched');
+              // Launch AI chat modal here later
+            }}
+          >
+            🪼 AI Jelly Help
+          </Button>
         </Box>
 
-        <Box mt={4}>{renderSection()}</Box>
+        {/* Dynamic Content */}
+        <Box>{renderSection()}</Box>
       </Box>
     </Box>
   );

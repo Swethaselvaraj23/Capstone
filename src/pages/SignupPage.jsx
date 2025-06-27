@@ -41,37 +41,36 @@ export default function Signup() {
   };
 
   return (
-    <Box sx={{ position: 'relative', height: '100vh', width: '100%', backgroundColor: '#f0fdfa' }}>
-      
-      {/* 🌊 Custom Bottom Waves */}
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          height: '35%',
-          zIndex: 0,
-        }}
-      >
-        <svg
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
-          style={{ width: '100%', height: '100%' }}
+    <Box
+          sx={{
+            position: 'relative',
+            width: '100%',
+            height: '100vh',
+            overflow: 'hidden',
+          }}
         >
-          <path
-            d="M0,160 C200,260 600,80 900,180 C1200,280 1440,160 1440,160 L1440,320 L0,320 Z"
-            fill="rgb(0,147,160)"
+          {/* Background image */}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              zIndex: 0,
+            }}
           />
-          <path
-            d="M0,200 C300,300 700,120 1100,220 C1300,260 1440,180 1440,180 L1440,320 L0,320 Z"
-            fill="rgb(6,92,105)"
-            opacity="0.9"
+    
+          {/* Semi-transparent overlay */}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              zIndex: 1,
+            }}
           />
-        </svg>
-      </Box>
 
-      {/* ✨ Signup Card */}
       <Box
         sx={{
           position: 'relative',
