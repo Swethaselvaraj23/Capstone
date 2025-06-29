@@ -18,6 +18,7 @@ export default function Home() {
         muted
         loop
         playsInline
+      
         sx={{
           position: 'absolute',
           top: 0,
@@ -28,6 +29,8 @@ export default function Home() {
           zIndex: -2,
           transition: 'opacity 2s ease-in-out',
           opacity: 1,
+
+
         }}
       >
         <source src="/beach.mp4" type="video/mp4" />
@@ -51,6 +54,7 @@ export default function Home() {
   alt="Tracklyn Logo"
   sx={{
     position: 'absolute',
+    marginTop: '-45px',
     top: 20,
     right: 30,
     width: { xs: 120, sm: 160, md: 180 },

@@ -3,7 +3,6 @@ import {
   Box,
   Drawer,
   Typography,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -11,45 +10,61 @@ import {
   ListItemText,
   Button,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+
 import TaskIcon from '@mui/icons-material/Checklist';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+
+
 import ProgressCharts from '../components/dashboard/ProgressCharts';
 import Settings from '../components/dashboard/Settings';
-import AddSubject from '../components/dashboard/AddSubject';
 
-const drawerWidth = 220;
+
+import TaskProgress from '../components/dashboard/TaskProgress';
+import TestProgress from '../components/dashboard/TestProgress';
+
+const drawerWidth = 240;
 
 export default function StudentDashboard() {
   const [selectedSection, setSelectedSection] = useState('Tasks');
   const [subjects, setSubjects] = useState([]);
- const renderSection = () => {
-  switch (selectedSection) {
-    case 'Tasks':
-      return (
-        <>
-          <AddSubject subjects={subjects} setSubjects={setSubjects} />
-          <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
-            Add your tasks here
-          </Typography>
-        </>
-      );
-    case 'Progress':
-      return <ProgressCharts />;
-    case 'Settings':
-      return <Settings />;
-    default:
-      return (
-        <Box textAlign="center" mt={10}>
-          <Typography variant="h6" color="text.secondary">
-            Section coming soon...
-          </Typography>
-        </Box>
-      );
-  }
-};
+
+  const renderSection = () => {
+    switch (selectedSection) {
+      case 'Tasks':
+        return (
+          <>
+            
+            <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
+              Add your tasks here
+            </Typography>
+          </>
+        );
+      case 'Progress':
+        return <ProgressCharts />;
+      case 'Task Progress':
+        return <TaskProgress />;
+      case 'Test Progress':
+        return <TestProgress />;
+      
+      
+      case 'Settings':
+        return <Settings />;
+      default:
+        return (
+          <Box textAlign="center" mt={10}>
+            <Typography variant="h6" color="text.secondary">
+              Section coming soon...
+            </Typography>
+          </Box>
+        );
+    }
+  };
+
   return (
     <Box sx={{ display: 'flex', height: '100vh', bgcolor: '#f7f9fa' }}>
       {/* Sidebar */}
@@ -74,7 +89,10 @@ export default function StudentDashboard() {
           {[
             { label: 'Tasks', icon: <TaskIcon /> },
             { label: 'Progress', icon: <BarChartIcon /> },
+            { label: 'Task Progress', icon: <TimelineIcon /> },
+            { label: 'Test Progress', icon: <AssessmentIcon /> },
             { label: 'Calendar', icon: <CalendarTodayIcon /> },
+            { label: 'Affirmations', icon: <EmojiEventsIcon /> },
             { label: 'Settings', icon: <SettingsIcon /> },
           ].map(({ label, icon }) => (
             <ListItem key={label} disablePadding>
@@ -126,15 +144,15 @@ export default function StudentDashboard() {
               },
             }}
             onClick={() => {
-              console.log('Chat with Jellyfish launched');
-              // Launch AI chat modal here later
+              console.log('AI Jelly Help launched');
+              // Future: launch floating planner
             }}
           >
             🪼 AI Jelly Help
           </Button>
         </Box>
 
-        {/* Dynamic Content */}
+        {/* Section Renderer */}
         <Box>{renderSection()}</Box>
       </Box>
     </Box>
