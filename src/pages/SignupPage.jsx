@@ -13,16 +13,23 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
 import { auth } from '../firebase';
 
-export default function Signup() {
+export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const provider = new GoogleAuthProvider();
 
   const handleSignup = async () => {
     setError('');
@@ -34,43 +41,56 @@ export default function Signup() {
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCred.user, { displayName: name });
-      navigate('/');
+      navigate('/welcome');
     } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("Google user:", user);
+      navigate('/welcome');
+    } catch (err) {
+      console.error(err);
       setError(err.message);
     }
   };
 
   return (
     <Box
-          sx={{
-            position: 'relative',
-            width: '100%',
-            height: '100vh',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Background image */}
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              zIndex: 0,
-            }}
-          />
-    
-          {/* Semi-transparent overlay */}
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.7)',
-              zIndex: 1,
-            }}
-          />
-      //ASWIKA
+      sx={{
+        position: 'relative',
+        width: '100%',
+        height: '100vh',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Background image */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Semi-transparent overlay */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          zIndex: 1,
+        }}
+      />
+
       <Box
         sx={{
           position: 'relative',
@@ -167,6 +187,37 @@ export default function Signup() {
                 Log in
               </Link>
             </Typography>
+
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{ color: 'text.secondary', mt: 1 }}
+            >
+              or continue with
+            </Typography>
+
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={handleGoogleLogin}
+              sx={{
+                backgroundColor: '#fff',
+                color: '#000',
+                textTransform: 'none',
+                fontWeight: 'bold',
+                borderColor: '#ccc',
+                '&:hover': {
+                  backgroundColor: '#f1f1f1',
+                },
+              }}
+            >
+              <img
+                src="https://developers.google.com/identity/images/g-logo.png"
+                alt="Google Logo"
+                style={{ width: 20, marginRight: 12 }}
+              />
+              Continue with Google
+            </Button>
           </Stack>
         </Paper>
       </Box>

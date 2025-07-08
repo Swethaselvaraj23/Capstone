@@ -1,7 +1,16 @@
-import { Box, Button, Typography, Stack } from '@mui/material';
+import { Box, Button, Typography, Stack, Switch, Snackbar, Alert } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Home() {
+  const [darkMode, setDarkMode] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const handleToggle = () => {
+    setDarkMode((prev) => !prev);
+    setSnackbarOpen(true);
+  };
+
   return (
     <Box
       sx={{
@@ -9,6 +18,13 @@ export default function Home() {
         width: '100%',
         position: 'relative',
         overflow: 'hidden',
+        background: darkMode
+          ? '#001e1e'
+          : `linear-gradient(
+              to bottom right,
+              rgba(224, 242, 241, 0.7),
+              rgba(1, 83, 90, 0.5)
+            )`,
       }}
     >
       {/* 🔁 Background Video */}
@@ -18,7 +34,6 @@ export default function Home() {
         muted
         loop
         playsInline
-      
         sx={{
           position: 'absolute',
           top: 0,
@@ -27,47 +42,58 @@ export default function Home() {
           height: '100%',
           objectFit: 'cover',
           zIndex: -2,
-          transition: 'opacity 2s ease-in-out',
           opacity: 1,
-
-
+          filter: darkMode ? 'brightness(0.4)' : 'brightness(1)',
         }}
       >
         <source src="/beach.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </Box>
 
-      {/* 🌤️ Optional Overlay */}
+      {/* 🌤️ Overlay */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to top, rgba(255,255,255,0.4), rgba(255,255,255,0.1))',
+          background: darkMode
+            ? 'linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.2))'
+            : 'linear-gradient(to top, rgba(255,255,255,0.4), rgba(255,255,255,0.1))',
           zIndex: -1,
         }}
       />
 
-      {/* 🖼️ Logo Top Right */}
+      {/* 🖼️ Logo + Toggle */}
       <Box
-  component="img"
-  src="/tracklyn-logo.png"
-  alt="Tracklyn Logo"
-  sx={{
-    position: 'absolute',
-    marginTop: '-45px',
-    top: 20,
-    right: 30,
-    width: { xs: 120, sm: 160, md: 180 },
-    zIndex: 2,
-    transition: 'transform 0.3s ease-in-out',
-    '&:hover': {
-      transform: 'scale(1.05)',
-    },
-  }}
-/>
+        sx={{
+          position: 'absolute',
+          top: 20,
+          right: 30,
+          display: 'flex',
+          alignItems: 'center',
+          zIndex: 2,
+        }}
+      >
+        <Box
+          component="img"
+          src="/tracklyn-logo.png"
+          alt="Tracklyn Logo"
+          sx={{
+            width: { xs: 80, sm: 100, md: 120 }, // smaller logo
+            marginRight: 2,
+            transition: 'transform 0.3s ease-in-out',
+            '&:hover': {
+              transform: 'scale(1.05)',
+            },
+          }}
+        />
+        <Switch
+          checked={darkMode}
+          onChange={handleToggle}
+          color="secondary"
+        />
+      </Box>
 
-
-      {/* ✏️ Text + Buttons 123*/}
+      {/* ✏️ Text + Buttons */}
       <Box
         sx={{
           position: 'relative',
@@ -85,7 +111,7 @@ export default function Home() {
             variant="h1"
             sx={{
               fontWeight: '800',
-              color: 'rgb(1, 83, 90)',
+              color: darkMode ? '#ffffff' : 'rgb(1, 83, 90)',
               mb: 3,
               fontSize: { xs: '3rem', sm: '4rem', md: '5rem' },
               lineHeight: 1.5,
@@ -98,7 +124,7 @@ export default function Home() {
             variant="h6"
             sx={{
               fontWeight: 600,
-              color: 'rgb(1, 83, 90)',
+              color: darkMode ? '#cccccc' : 'rgb(1, 83, 90)',
               mb: 2,
               fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
             }}
@@ -126,13 +152,15 @@ export default function Home() {
               component={RouterLink}
               to="/login"
               sx={{
-                backgroundColor: 'rgb(0, 68, 78)',
+                backgroundColor: darkMode ? '#00796b' : 'rgb(0, 68, 78)',
                 color: '#fff',
                 fontWeight: 600,
                 px: 4,
                 py: 1.5,
                 '&:hover': {
-                  backgroundColor: 'rgb(1, 44, 50)',
+                  backgroundColor: darkMode
+                    ? '#004d40'
+                    : 'rgb(1, 44, 50)',
                 },
               }}
             >
@@ -144,15 +172,17 @@ export default function Home() {
               component={RouterLink}
               to="/signup"
               sx={{
-                backgroundColor: 'rgb(0,68,78)',
+                backgroundColor: darkMode ? '#00796b' : 'rgb(0, 68, 78)',
                 color: '#fff',
                 fontWeight: 900,
                 px: 4,
                 py: 1.5,
                 '&:hover': {
-                  backgroundColor: '#e0f2f1',
+                  backgroundColor: darkMode
+                    ? '#004d40'
+                    : '#e0f2f1',
                   borderColor: '#00332d',
-                  color: '#00332d',
+                  color: darkMode ? '#fff' : '#00332d',
                 },
               }}
             >
@@ -161,6 +191,22 @@ export default function Home() {
           </Stack>
         </Box>
       </Box>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Theme changed to {darkMode ? 'Dark' : 'Light'} mode!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
