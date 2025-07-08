@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import dayjs from "dayjs";
 import {
   Box,
   TextField,
@@ -15,15 +16,17 @@ export default function HabitYesNoForm({ onBack, onSave }) {
   const [habit, setHabit] = useState("");
   const [description, setDescription] = useState("");
   const [frequency, setFrequency] = useState("Every Day");
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(dayjs());
   const [hasEndDate, setHasEndDate] = useState(false);
-  const [endDate, setEndDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
+  const [endDate, setEndDate] = useState(dayjs());
+  const [time, setTime] = useState(dayjs());
 
   return (
     <Box sx={{ p: 3 }}>
       <Stack spacing={2}>
-        <Typography variant="h6" fontWeight="bold">Define Your Habit</Typography>
+        <Typography variant="h6" fontWeight="bold">
+          Define Your Habit
+        </Typography>
 
         <TextField
           label="Habit"
@@ -86,9 +89,10 @@ export default function HabitYesNoForm({ onBack, onSave }) {
           onChange={(newVal) => setTime(newVal)}
         />
 
-        {/* Buttons */}
         <Stack direction="row" spacing={2} justifyContent="space-between" mt={2}>
-          <Button variant="outlined" onClick={onBack}>Back</Button>
+          <Button variant="outlined" onClick={onBack}>
+            Back
+          </Button>
           <Button
             variant="contained"
             onClick={() =>
